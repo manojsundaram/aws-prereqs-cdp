@@ -7,3 +7,9 @@ How to run this tool?
 1. Install `jq` on the terminal
 2. Setup aws cli & login
 3. Run the scripts in their numbered order. Each script includes a 'help' / '-h' flag
+
+
+What does it do?
+- 01_aws_create_bucket.sh will create an S3 bucket with the prefix & region provided
+- 02_aws_create_policies.sh will create all the IAM policies described under https://docs.cloudera.com/cdp-public-cloud/cloud/requirements-aws/topics/mc-idbroker-minimum-setup.html
+- 03_aws_create_roles.sh will create the roles, trusts & associate the policies created above with the appropriate roles per https://docs.cloudera.com/cdp-public-cloud/cloud/requirements-aws/topics/mc-idbroker-minimum-setup.html
