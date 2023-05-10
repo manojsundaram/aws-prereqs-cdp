@@ -62,5 +62,5 @@ fi
 
 aws s3api put-object  --bucket $bucket --key logs/ 
 aws s3api put-object  --bucket $bucket --key ranger/audit/ 
-aws s3api put-object  --bucket $bucket --key dataeng/ 
+#aws s3api put-object  --bucket $bucket --key dataeng/ 
 aws s3api put-object  --bucket $bucket --key backup/
