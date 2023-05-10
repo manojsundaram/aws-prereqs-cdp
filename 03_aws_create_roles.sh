@@ -54,13 +54,13 @@ DATALAKE_BUCKET=${bucket}
 # LOGS_LOCATION_BASE=${bucket}/${prefix}-dl/logs
 
 STORAGE_LOCATION_BASE=${bucket}/
-LOGS_LOCATION_BASE=${bucket}/
-IDBROKER_ROLE=${prefix}-idbroker-role
+LOGS_LOCATION_BASE=${bucket}'\/'${prefix}'\-dl\/logs'
+#LOGS_LOCATION_BASE=${bucket}/
 sleep_duration=3
 
+IDBROKER_ROLE=${prefix}-idbroker-role
 
 # Creating roles (and sleeping in between)
-
 # IDBROKER
 aws iam create-role --role-name ${prefix}-idbroker-role  --assume-role-policy-document file://${BASE_DIR}/access-policies/aws-cdp-ec2-role-trust-policy.json
 sleep $sleep_duration 
@@ -74,26 +74,13 @@ sleep $sleep_duration
 aws iam attach-role-policy --role-name ${prefix}-idbroker-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-idbroker-assume-role-policy
 sleep $sleep_duration 
 
-
-# DL ADMIN
-
-cat ${BASE_DIR}/access-policies/aws-idbroker-role-trust-policy.json  | sed s/\${AWS_ACCOUNT_ID}/"${AWS_ACCOUNT_ID}"/g | sed s/\${IDBROKER_ROLE}/"${IDBROKER_ROLE}"/g > ${BASE_DIR}/${prefix}_tmp
-aws iam create-role --role-name ${prefix}-datalake-admin-role --assume-role-policy-document file://${BASE_DIR}/${prefix}_tmp
-sleep $sleep_duration 
-
-aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-bucket-policy-s3access
-sleep $sleep_duration 
-
-aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-dynamodb-policy
-sleep $sleep_duration 
-
-aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-admin-policy-s3access
+aws iam attach-role-policy --role-name ${prefix}-idbroker-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-log-policy
 sleep $sleep_duration 
 
 
 # LOG
 
-aws iam create-role --role-name ${prefix}-log-role --assume-role-policy-document file://${BASE_DIR}/access-policies/aws-ec2-role-trust-policy.json
+aws iam create-role --role-name ${prefix}-log-role --assume-role-policy-document file://${BASE_DIR}/access-policies/aws-cdp-ec2-role-trust-policy.json
 sleep $sleep_duration 
 
 aws iam create-instance-profile --instance-profile-name ${prefix}-log-role
@@ -102,10 +89,13 @@ sleep $sleep_duration
 aws iam add-role-to-instance-profile --instance-profile-name ${prefix}-log-role --role-name ${prefix}-log-role
 sleep $sleep_duration 
 
-aws iam attach-role-policy --role-name ${prefix}-log-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-log-policy-s3access
+aws iam attach-role-policy --role-name ${prefix}-log-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-log-policy
 sleep $sleep_duration 
 
-aws iam attach-role-policy --role-name ${prefix}-log-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-bucket-policy-s3access
+aws iam attach-role-policy --role-name ${prefix}-log-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-restore-policy
+sleep $sleep_duration 
+
+aws iam attach-role-policy --role-name ${prefix}-log-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-backup-policy
 sleep $sleep_duration 
 
 
@@ -115,15 +105,35 @@ cat ${BASE_DIR}/access-policies/aws-idbroker-role-trust-policy.json | sed s/\${A
 aws iam create-role --role-name ${prefix}-ranger-audit-role --assume-role-policy-document file://${BASE_DIR}/${prefix}_tmp
 sleep $sleep_duration 
 
-aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-bucket-policy-s3access
+aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-ranger-audit-s3-policy
 sleep $sleep_duration 
 
-aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-ranger-audit-policy-s3access
+aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-bucket-access-policy
 sleep $sleep_duration 
 
-aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-dynamodb-policy
+aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-backup-policy
+sleep $sleep_duration
+
+aws iam attach-role-policy --role-name ${prefix}-ranger-audit-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-restore-policy
 sleep $sleep_duration 
 
+# DATALAKE ADMIN
+
+cat ${BASE_DIR}/access-policies/aws-idbroker-role-trust-policy.json  | sed s/\${AWS_ACCOUNT_ID}/"${AWS_ACCOUNT_ID}"/g | sed s/\${IDBROKER_ROLE}/"${IDBROKER_ROLE}"/g > ${BASE_DIR}/${prefix}_tmp
+aws iam create-role --role-name ${prefix}-datalake-admin-role --assume-role-policy-document file://${BASE_DIR}/${prefix}_tmp
+sleep $sleep_duration 
+
+aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-admin-s3-policy
+sleep $sleep_duration 
+
+aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-bucket-access-policy
+sleep $sleep_duration 
+
+aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-backup-policy
+sleep $sleep_duration 
+
+aws iam attach-role-policy --role-name ${prefix}-datalake-admin-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-datalake-restore-policy
+sleep $sleep_duration 
 
 rm ${BASE_DIR}/${prefix}_tmp
 
