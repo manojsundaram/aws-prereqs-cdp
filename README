@@ -1,3 +1,9 @@
-1. Install jq
+# README
+
+Tested on: mac OS Ventura 13.3.1 (a)
+Should work on xsh & bash environments, with a working AWS CLI setup
+
+How to run this tool?
+1. Install `jq` on the terminal
 2. Setup aws cli & login
 3. Run the scripts in their numbered order. Each script includes a 'help' / '-h' flag
