@@ -13,3 +13,15 @@ What does it do?
 - 01_aws_create_bucket.sh will create an S3 bucket with the prefix & region provided
 - 02_aws_create_policies.sh will create all the IAM policies described under https://docs.cloudera.com/cdp-public-cloud/cloud/requirements-aws/topics/mc-idbroker-minimum-setup.html
 - 03_aws_create_roles.sh will create the roles, trusts & associate the policies created above with the appropriate roles per https://docs.cloudera.com/cdp-public-cloud/cloud/requirements-aws/topics/mc-idbroker-minimum-setup.html
+- 04_aws_create_private_network.sh will
+    - create a VPC with predefined/hardcoded CIDR
+    - create 3 public subnets, creates and attaches IGW to the public subnets, creates & associates route tables
+    - create 3 private subnets, creates & associates route tables, NAT gateways
+    - Security groups Knox Gateway & Default ones are also created
+    - All resources are tagged
+    - The script will print out the AWS IDs for all the resources created, which you will need in the next steps
+- ./05_aws_create_cross_account.sh will create a cross account IAM trust with the CDP management console and attach the policy required to onboard to CDP
+Example: ./05_aws_create_cross_account.sh ms1 30c2498c-xyza-0123-aed6-3be4l7d8f02 122354443826 no
+- ./06_cdp_create_aws_credential.sh will create a credential on CDP. You will have to login to the CDP CLI to be able to run this command
+Example: ./06_cdp_create_aws_credential.sh ms1 <arn-of-xaccount-role>
+- 

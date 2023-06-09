@@ -22,7 +22,7 @@ Arguments:
 
 }
 
-# check whether user had supplied -h or --help . If yes display usage 
+# check whether user had supplied -h or --help . If yes display usage
 if [[ ( $1 == "--help") ||  $1 == "-h" ]] 
 then 
     display_usage
