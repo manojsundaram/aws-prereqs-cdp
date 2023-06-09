@@ -93,13 +93,16 @@ then
     knox_sg_id=${12}
     default_sg_id=${13}
 
-    cdp iam add-ssh-public-key --public-key $key --description ${prefix}-key
+#    cdp iam add-ssh-public-key --public-key $key --description ${prefix}-key
+    mkdir -p ssh-key
+    aws ec2 create-key-pair --key-name ${prefix}-key > ssh-key/id_rsa_${prefix}
+    keyId=`cat ssh-key/id_rsa_${prefix} | jq .KeyName`
 
     cdp environments create-aws-environment --environment-name ${prefix}-cdp-env \
         --credential-name ${credential} \
         --region ${region} \
         --security-access securityGroupIdForKnox="${knox_sg_id}",defaultSecurityGroupId="${default_sg_id}"  \
-        --authentication publicKeyId="${prefix}-key" \
+        --authentication publicKeyId="${keyId}" \
         --log-storage storageLocationBase="${prefix}-cdp-bucket",instanceProfile="arn:aws:iam::$AWS_ACCOUNT_ID:instance-profile/${prefix}-log-role" \
         --subnet-ids "${subnet1}" "${subnet2}" "${subnet3}" \
         --vpc-id "${vpc}" \
@@ -110,7 +113,7 @@ else
         --credential-name ${credential}  \
         --region ${region} \
         --security-access cidr="${sg_cidr}"  \
-        --authentication publicKeyId="${prefix}-key" \
+        --authentication publicKeyId="${keyId}" \
         --log-storage storageLocationBase="${prefix}-cdp-bucket",instanceProfile="arn:aws:iam::$AWS_ACCOUNT_ID:instance-profile/${prefix}-log-role" \
         --network-cidr "10.0.0.0/16" \
         --enable-tunnel
