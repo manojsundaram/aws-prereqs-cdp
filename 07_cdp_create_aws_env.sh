@@ -17,11 +17,8 @@ Description:
 
 Arguments:
     prefix:         prefix for your assets
-    credentials:    CDP credential name
     region:         region for your env
-    key:            name of the AWS key to re-use
-    sg_cidr:        CIDR to open in your security group
-    workload_analytics  enable workload analytics?
+    sg_cidr:        CIDR to open in your security group (your VPN CIDR)
     subnet1:        (optional) subnetId to be used for your environment (must be in different AZ than other subnets)
     subnet2:        (optional) subnetId to be used for your environment (must be in different AZ than other subnets)
     subnet3:        (optional) subnetId to be used for your environment (must be in different AZ than other subnets)
@@ -41,65 +38,52 @@ fi
 
 
 # Check the numbers of arguments
-if [  $# -lt 6 ] 
+if [  $# -lt 3 ] 
 then 
     echo "Not enough arguments!" >&2
     display_usage
     exit 1
 fi 
 
-if [  $# -gt 13 ] 
+if [  $# -gt 9 ] 
 then 
     echo "Too many arguments!" >&2
     display_usage
     exit 1
 fi 
 
-if [[ $# -gt 6 && $# -ne 13 ]] 
+if [[ $# -gt 3 && $# -ne 9 ]] 
 then 
     echo "Wrong number of arguments!" >&2
     display_usage
     exit 1
 fi 
-flatten_tags() {
-    tags=$1
-    flattened_tags=""
-    for item in $(echo ${tags} | jq -r '.[] | @base64'); do
-        _jq() {
-            echo ${item} | base64 --decode | jq -r ${1}
-        }
-        #echo ${item} | base64 --decode
-        key=$(_jq '.key')
-        value=$(_jq '.value')
-        flattened_tags=$flattened_tags" key=\"$key\",value=\"$value\""
-    done
-    echo $flattened_tags
-}
-
-prefix=$1
-credential=$2
-region=$3
-key=$4
-sg_cidr=$5
-AWS_ACCOUNT_ID=$6
-workload_analytics=$7
 owner=$(cdp iam get-user | jq -r .user.email)
-if [  $# -gt 6 ]
-then
-    subnet1=$8
-    subnet2=$9
-    subnet3=${10}
-    vpc=${11}
-    knox_sg_id=${12}
-    default_sg_id=${13}
 
-#    cdp iam add-ssh-public-key --public-key $key --description ${prefix}-key
-    mkdir -p ssh-key
-    aws ec2 create-key-pair --key-name ${prefix}-key > ssh-key/id_rsa_${prefix}
-    keyId=`cat ssh-key/id_rsa_${prefix} | jq .KeyName`
+# Mandatory arguments
+prefix=$1
+region=$2
+sg_cidr=$3
+AWS_ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text`
+
+mkdir -p ssh-key
+aws ec2 create-key-pair --key-name ${prefix}-key > ssh-key/id_rsa_${prefix}
+keyId=`cat ssh-key/id_rsa_${prefix} | jq .KeyName`
+
+echo "Cloudbreak user ssh key generated & stored to `pwd`/ssh-key"
+
+if [  $# -gt 4 ]
+then
+    # Optional arguments parsing
+    subnet1=$4
+    subnet2=$5
+    subnet3=$6
+    vpc=$7
+    knox_sg_id=$8
+    default_sg_id=$9
 
     cdp environments create-aws-environment --environment-name ${prefix}-cdp-env \
-        --credential-name ${credential} \
+        --credential-name ${prefix}-cred \
         --region ${region} \
         --security-access securityGroupIdForKnox="${knox_sg_id}",defaultSecurityGroupId="${default_sg_id}"  \
         --authentication publicKeyId="${keyId}" \
@@ -110,7 +94,7 @@ then
 
 else 
     cdp environments create-aws-environment --environment-name ${prefix}-cdp-env \
-        --credential-name ${credential}  \
+        --credential-name ${prefix}-cred  \
         --region ${region} \
         --security-access cidr="${sg_cidr}"  \
         --authentication publicKeyId="${keyId}" \

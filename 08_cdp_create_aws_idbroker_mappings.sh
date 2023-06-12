@@ -16,7 +16,6 @@ Description:
 
 Arguments:
     prefix:         prefix for your assets
-    AWS_ACCOUNT_ID: account ID for your AWS account
     --help or -h:   displays this help"
 
 }
@@ -30,14 +29,14 @@ fi
 
 
 # Check the numbers of arguments
-if [  $# -lt 2 ] 
+if [  $# -lt 1 ] 
 then 
     echo "Not enough arguments!" >&2
     display_usage
     exit 1
 fi 
 
-if [  $# -gt 2 ] 
+if [  $# -gt 1 ] 
 then 
     echo "Too many arguments!" >&2
     display_usage
@@ -46,7 +45,7 @@ fi
 sleep_duration=3 
 
 prefix=$1
-AWS_ACCOUNT_ID=$2
+AWS_ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text`
 
 env_crn=$(cdp environments describe-environment --environment-name $2-cdp-env | jq -r .environment.crn)
 user_crn=$(cdp iam get-user | jq -r .user.crn)

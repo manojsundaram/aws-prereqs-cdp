@@ -81,7 +81,6 @@ cat ${BASE_DIR}/access-policies/aws-cdp-bucket-access-policy.json  | sed s/\${DA
 aws iam create-policy --policy-name ${prefix}-bucket-access-policy --policy-document file://${BASE_DIR}/${prefix}_tmp
 sleep $sleep_duration  
 
-# Might get errors here
 cat ${BASE_DIR}/access-policies/aws-datalake-backup-policy.json  | sed s/\${BACKUP_LOCATION_BASE}/"${BACKUP_LOCATION_BASE}"/g > ${BASE_DIR}/${prefix}_tmp
 aws iam create-policy --policy-name ${prefix}-datalake-backup-policy --policy-document file://${BASE_DIR}/${prefix}_tmp
 sleep $sleep_duration  

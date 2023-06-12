@@ -17,7 +17,7 @@ Description:
 Arguments:
     prefix:         prefix of your assets
     region:         AWS region
-    sg_cidr:        CIDR to open in your security group
+    sg_cidr:        CIDR to open in your security group (your VPN CIDR)
     --help or -h:   displays this help"
 
 }

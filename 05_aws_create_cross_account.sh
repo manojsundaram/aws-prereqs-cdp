@@ -17,8 +17,8 @@ Description:
 
 Arguments:
     prefix:         prefix for your policy/role
-    external_id:    your external ID, can be found in register environment screen
-    ext_acct_id:    your external account ID, can be found in register environment screen
+    external_id:    your external ID, can be found in register environment screen of CDP
+    ext_acct_id:    your external account ID, can be found in register environment screen of CDP
     min_flag:       if set to yes, will generate the minimal cross account policies (possible values yes or no)
     --help or -h:   displays this help"
 

@@ -15,11 +15,9 @@ Description:
     Creates a data lake post environment creation
 
 Arguments:
-    AWS_ACCOUNT_ID: AWS Account ID where youa re deploying CDP to
     prefix:         prefix for your assets
     scale:          scale of the datalake (LIGHT_DUTY or MEDIUM_DUTY)
     --help or -h:   displays this help"
-
 }
 
 # check whether user had supplied -h or --help . If yes display usage 
@@ -31,26 +29,24 @@ fi
 
 
 # Check the numbers of arguments
-if [  $# -lt 3 ] 
+if [  $# -lt 2 ] 
 then 
     echo "Not enough arguments!"  >&2
     display_usage
     exit 1
 fi 
 
-if [  $# -gt 3 ] 
+if [  $# -gt 2 ] 
 then 
     echo "Too many arguments!"  >&2
     display_usage
     exit 1
 fi 
-
-
 sleep_duration=3
 
-AWS_ACCOUNT_ID=$1
-prefix=$2
-DL_SCALE=$3
+AWS_ACCOUNT_ID=`aws sts get-caller-identity --query "Account" --output text`
+prefix=$1
+DL_SCALE=$2
 
 owner=$(cdp iam get-user | jq -r .user.email)
 

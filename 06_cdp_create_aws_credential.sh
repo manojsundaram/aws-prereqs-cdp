@@ -16,7 +16,7 @@ Description:
 
 Arguments:
     credential_name: name of your credential
-    role_arn:        role arn that has cross account policy
+    role_arn:        role arn that has cross account policy (output from last script)
     --help or -h:   displays this help"
 
 }
