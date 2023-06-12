@@ -56,7 +56,7 @@ fi
 
 if [ $(aws s3api head-bucket  --bucket $bucket 2>&1 | wc -l) -gt 0 ] 
 then
-    aws s3api create-bucket  --bucket $bucket --region $region $location_constraint 
+    aws s3api create-bucket  --bucket $bucket --region $region $location_constraint  >> /dev/null
 fi
 
 

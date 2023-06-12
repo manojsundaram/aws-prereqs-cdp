@@ -84,5 +84,5 @@ else
     aws iam attach-role-policy  --role-name ${prefix}-cross-account-role --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/${prefix}-cross-account-full-policy > /dev/null 2>&1
     sleep $sleep_duration 
 fi
-XACCOUNTROLEARN=$(aws iam get-role --role-name ms1-cross-account-role | jq .Role.Arn)
+XACCOUNTROLEARN=$(aws iam get-role --role-name ${prefix}-cross-account-role | jq .Role.Arn)
 echo "XAccount ROLE ARN: ${XACCOUNTROLEARN}"
