@@ -21,7 +21,14 @@ What does it do?
     - All resources are tagged
     - The script will print out the AWS IDs for all the resources created, which you will need in the next steps
 - ./05_aws_create_cross_account.sh will create a cross account IAM trust with the CDP management console and attach the policy required to onboard to CDP
-Example: ./05_aws_create_cross_account.sh ms1 30c2498c-xyza-0123-aed6-3be4l7d8f02 122354443826 no
+Example: ./05_aws_create_cross_account.sh ms1 30c2498c-xyza-0123-aed6-3be4l7d8f02 no
 - ./06_cdp_create_aws_credential.sh will create a credential on CDP. You will have to login to the CDP CLI to be able to run this command
 Example: ./06_cdp_create_aws_credential.sh ms1 <arn-of-xaccount-role>
-- 
+- ./06_cdp_create_aws_credential.sh ms3 "arn:aws:iam::181103322242:role/ms1-cross-account-role"
+- ./07a_cdp_create_pvt_aws_env.sh deploys CDP into a private network setup
+- ./07b_cdp_create_semipvt_aws_env.sh deploys CDP into a semi private network setup
+Example: ./07b_cdp_create_semipvt_aws_env.sh ms3 us-east1 "165.1.176.125/32" subnet-05ed02fcaf8888ffd subnet-03ae928bc749781a7 subnet-0b531c8853e45f260 subnet-04e3e4045b46ce98f subnet-02bc0a5f14aad0f14 subnet-008efb92d05308f77 "vpc-0c06ea3a14249604a" "sg-0076e97ae35592153"  "sg-0d1733a03cdf073e4"
+- ./08_cdp_create_aws_idbroker_mappings.sh will create IDBroker mappings required for CDP deployments
+Example: ./08_cdp_create_aws_idbroker_mappings.sh ms3
+- ./09_cdp_create_aws_datalake.sh will create a CDP datalake
+Example: ./09_cdp_create_aws_datalake.sh ms3 LIGHT_DUTY
