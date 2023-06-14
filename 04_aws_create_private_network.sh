@@ -66,7 +66,7 @@ sg_cidr=$3
 
 
 # 1. Creating VPC
-vpc_id=$(aws ec2 create-vpc --cidr 10.10.0.0/16 | jq -r .Vpc.VpcId)
+vpc_id=$(aws ec2 create-vpc --cidr 10.10.0.0/16 --region ${region} | jq -r .Vpc.VpcId)
 aws ec2 create-tags --resources $vpc_id --tags Key=Name,Value="$prefix-cdp-vpc" $(flatten_tags "$TAGS") > /dev/null 2>&1
 
 # 2. Creating public subnets
